@@ -4,7 +4,7 @@ fun main() {
     solve("Secret Entrance") {
         val input = lines.map { it.first() to it.drop(1).toInt() }
 
-        part1(1011) {
+        part1 {
             var dial = 50
             var count = 0
             input
@@ -17,7 +17,7 @@ fun main() {
             count
         }
 
-        part2(5937) {
+        part2 {
             var dial = 50
             var count = 0
             input

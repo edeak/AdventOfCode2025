@@ -9,12 +9,8 @@ fun main() {
 
         fun calc(check: Long.() -> Boolean) = input.sumOf { r -> r.filter { check(it) }.sum() }
 
-        part1(17077011375) {
-            calc { "$this".let { s -> (s.length / 2).let { s.take(it) == s.drop(it) } } }
-        }
+        part1 { calc { "$this".let { s -> (s.length / 2).let { s.take(it) == s.drop(it) } } } }
 
-        part2(36037497037) {
-            calc { "$this".matches(Regex("(.+)\\1+")) }
-        }
+        part2 { calc { "$this".matches(Regex("(.+)\\1+")) } }
     }
 }

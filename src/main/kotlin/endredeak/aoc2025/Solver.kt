@@ -16,12 +16,12 @@ data class Solution(val name: String) {
     }
 
     private var part1: () -> Any = { -1 }
-    private var expected1: Any = -1
+    private var expected1: Any? = null
 
     private var part2: () -> Any = { -1 }
-    private var expected2: Any = -1
+    private var expected2: Any? = null
 
-    fun part1(expected: Any = -1, block: () -> Any) {
+    fun part1(expected: Any? = -1, block: () -> Any) {
         expected1 = expected; part1 = block
     }
 
@@ -41,7 +41,7 @@ data class Solution(val name: String) {
 
     private fun runPart(part: Int, block: () -> Any) {
         measureTimedValue { block() }.let { (answer, time) ->
-            println("2023 $dayFormatted: $name -- part $part -- " +
+            println("2025 $dayFormatted: $name -- part $part -- " +
                     "(in [${time.inWholeMicroseconds / 100.0} ms]):" +
                     " ${if (answer is Unit) "-1" else answer}")
         }
