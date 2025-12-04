@@ -1,7 +1,7 @@
 package endredeak.aoc2025.lib.utils
 
 data class Coord(val x: Int, val y: Int) : Comparable<Coord> {
-    override fun compareTo(other: Coord): Int = this.x.compareTo(other.x) + this.y.compareTo(other.y)
+    override fun compareTo(other: Coord): Int = compareValuesBy(this, other, Coord::x, Coord::y)
 
     fun dirs(cross: Boolean = false) =
         listOf(
