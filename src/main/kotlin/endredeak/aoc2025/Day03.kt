@@ -13,8 +13,8 @@ fun main() {
                     .let { max -> max.value + maxJoltage(bank.drop(max.index + 1), n - 1) }
             else ""
 
-        part1(17263) { input.sumOf { maxJoltage(it, 2).toLong() } }
+        part1 { input.sumOf { maxJoltage(it, 2).toLong() } }
 
-        part2(3121910778619) { input.sumOf { maxJoltage(it, 12).toLong() } }
+        part2 { input.sumOf { maxJoltage(it, 12).toLong() } }
     }
 }

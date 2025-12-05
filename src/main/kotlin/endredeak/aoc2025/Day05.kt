@@ -3,7 +3,7 @@ package endredeak.aoc2025
 import kotlin.math.max
 
 fun main() {
-    solve("") {
+    solve("Cafeteria") {
         val input = lines
             .filter { it.isNotBlank() }
             .partition { it.contains("-") }
@@ -12,13 +12,13 @@ fun main() {
                         a.map { it.toLong() }
             }
 
-        part1(896) {
+        part1 {
             input.let { (fresh, available) ->
                 available.count { a -> fresh.any { f -> a in f } }
             }
         }
 
-        part2(346240317247002) {
+        part2 {
             input.let { (fresh, _) ->
                 var rem = fresh.sortedBy { it.first }
                 var count = 0L
