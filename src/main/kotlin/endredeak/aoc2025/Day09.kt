@@ -24,20 +24,18 @@ fun main() {
             .zipWithNext()
             .map { it.sort() }
 
+        fun Pair<Coord, Coord>.squared() = (second.y - first.y + 1L) * (second.x - first.x + 1L)
+
         part1 {
-            pairs.maxOf { (p1, p2) ->
-                (p2.y - p1.y + 1L) * (p2.x - p1.x + 1L)
-            }
+            pairs.maxOf { it.squared() }
         }
 
         part2 {
-            pairs.filter { (p1, p2) ->
-                edges.none { (l1, l2) ->
-                    p1.x < l2.x && p2.x > l1.x && p1.y < l2.y && p2.y > l1.y
+            pairs.filter { (r1, r2) ->
+                edges.none { (e1, e2) ->
+                    r1.x < e2.x && r2.x > e1.x && r1.y < e2.y && r2.y > e1.y
                 }
-            }.maxOf { (p1, p2) ->
-                (p2.y - p1.y + 1L) * (p2.x - p1.x + 1L)
-            }
+            }.maxOf { it.squared() }
         }
     }
 }
