@@ -1,5 +1,11 @@
 package endredeak.aoc2025
 
+import com.microsoft.z3.Context
+import com.microsoft.z3.Expr
+import com.microsoft.z3.IntNum
+import com.microsoft.z3.IntSort
+import com.microsoft.z3.Optimize
+import com.microsoft.z3.Status
 import java.util.BitSet
 
 fun main() {
@@ -59,24 +65,6 @@ fun main() {
 
         fun combinations(k: Int): List<List<Int>> = (1..k).map { allCombinations(k, it) }.flatten()
 
-        fun nAryCounter(n: Int, k: Int): Sequence<List<Int>> = sequence {
-            if (k < 1 || n < 1) return@sequence
-
-            val max = n - 1
-            val digits = IntArray(k) { 0 }
-
-            while (true) {
-                yield(digits.toList()) // Yield the current state
-
-                var i = k - 1
-                while (i >= 0 && digits[i] == max) i--
-
-                if (i < 0) break
-
-                digits[i]++
-                for (j in i + 1 until k) digits[j] = 0
-            }
-        }
 
         part1 {
             input.sumOf { (t, g, _, _) ->
@@ -96,27 +84,44 @@ fun main() {
             }
         }
 
-        // brute force doesn't work... need to refactor... maybe dynamic programming?
+        // copied from Kotlin slack aoc channel day 10 thread
         part2(-1) {
-            var count = 0L
-            input.map { it.increments to it.targetJoltages }
-                .forEach { (g, t) ->
-                    nAryCounter(10, g.size).forEach { candidate ->
-                        val curr = MutableList(t.size) { 0 }
+            fun <A> withZ3(f: Context.() -> A): A = Context().use { f(it) }
+            fun Context.minimizeInt(target: Expr<IntSort>, constraints: Optimize.() -> Unit): Int = with(mkOptimize()) {
+                val result = MkMinimize(target)
+                constraints()
+                check(Check() == Status.SATISFIABLE) { "constraints not satisfiable" }
+                (result.value as IntNum).int
+            }
 
-                        candidate.forEachIndexed { i, v ->
-                            g[i].forEach { b ->
-                                curr[b] += v
-                            }
-                        }
+            lines.map { line ->
+                val parts = line.split(" ")
+                val lights = parts.first().removeSurrounding("[", "]").reversed()
+                    .fold(0L) { acc, ch -> acc shl 1 or if (ch == '#') 1 else 0 }
+                val buttons = parts.subList(1, parts.lastIndex)
+                    .map { s ->
+                        s.removeSurrounding("(", ")").split(',').map { it.toInt() }
+                            .fold(0L) { acc, i -> acc or (1L shl i) }
+                    }
+                val joltage = parts.last().removeSurrounding("{", "}").split(',').map { it.toInt() }
+                Triple(lights, buttons, joltage)
+            }
+                .sumOf { (_, buttons, joltages) ->
+                    withZ3 {
+                        val buttonPresses =
+                            buttons.withIndex().associate { (idx, button) -> button to mkIntConst("p$idx") }
+                        val totalPresses = mkAdd(*buttonPresses.values.toTypedArray())
+                        fun sumPresses(idx: Int) =
+                            mkAdd(*buttonPresses.filterKeys { it ushr idx and 1L == 1L }.values.toTypedArray())
 
-                        if (curr == t) {
-                            count += candidate.sumOf { it }
+                        minimizeInt(totalPresses) {
+                            // such that each joltage is the sum of presses of matching buttons
+                            for ((i, joltage) in joltages.withIndex()) Add(mkEq(sumPresses(i), mkInt(joltage)))
+                            // and that all presses are non-negative
+                            for (it in buttonPresses) Add(mkLe(mkInt(0), it.value))
                         }
                     }
                 }
-
-            count
         }
     }
 }
