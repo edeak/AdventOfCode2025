@@ -2,7 +2,7 @@ package endredeak.aoc2025
 
 fun main() {
     solve("Christmas Tree Farm") {
-        part1(481) {
+        part1 {
             text.replace("x", " ").replace(":", "").split("\n\n")
                 .partition { it.contains("#") }
                 .let { (s, r) ->

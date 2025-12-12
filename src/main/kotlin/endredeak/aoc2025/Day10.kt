@@ -85,7 +85,7 @@ fun main() {
         }
 
         // copied from Kotlin slack aoc channel day 10 thread
-        part2(-1) {
+        part2 {
             fun <A> withZ3(f: Context.() -> A): A = Context().use { f(it) }
             fun Context.minimizeInt(target: Expr<IntSort>, constraints: Optimize.() -> Unit): Int = with(mkOptimize()) {
                 val result = MkMinimize(target)
